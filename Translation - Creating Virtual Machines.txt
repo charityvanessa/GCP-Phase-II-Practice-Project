@@ -1,0 +1,45 @@
+# Course: Essential Google Cloud Infrastructure: Foundation
+## Module: Virtual Machines
+### Creating Virtual Machines
+
+** Task 1: Create a utility virtual machine **
+
+1. Create a VM
+	gcloud compute --project=qwiklabs-gcp-03-0757c2d9dae8 instances create van-vm1 --zone=us-central1-c --machine-type=n1-standard-1 --image=debian-10-buster-v20200902 --image-project=debian-cloud 
+
+2. Explore the VM details
+	gcloud compute instances describe van-vm1 --zone=us-central1-c
+
+3. Explore the VM logs
+	gcloud logging read  --project qwiklabs-gcp-03-0757c2d9dae8 --limit 10
+
+** Task 2: Create a Windows virtual machine **
+1. Create a VM
+	gcloud compute --project=qwiklabs-gcp-03-0757c2d9dae8 instances create van-win-vm --zone=europe-west2-a --machine-type=n1-standard-2 --tags=http-server,https-server --image=windows-server-2016-dc-core-v20200813 --image-project=windows-cloud --boot-disk-size=100GB --boot-disk-type=pd-ssd --boot-disk-device-name=van-win-vm 
+
+	* Allow HTTP traffic *
+	gcloud compute --project=qwiklabs-gcp-03-0757c2d9dae8 firewall-rules create default-allow-http --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0 --target-tags=http-server
+
+	* Allow HTTPS traffic *
+	gcloud compute --project=qwiklabs-gcp-03-0757c2d9dae8 firewall-rules create default-allow-https --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:443 --source-ranges=0.0.0.0/0 --target-tags=https-server
+
+2. Set password for the VM
+	gcloud compute reset-windows-password van-win-vm --zone=europe-west2-a
+	
+** Task 3: Create a custom virtual machine **
+1. Create a VM
+	gcloud beta compute --project=qwiklabs-gcp-03-0757c2d9dae8 instances create van-custom --zone=us-west1-b --machine-type=e2-custom-6-32768 --subnet=default --image=debian-10-buster-v20200910 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=van-custom
+	
+2. Connect via SSH to your custom VM
+	gcloud compute ssh --project qwiklabs-gcp-03-0757c2d9dae8 --zone us-west1-b van-custom
+
+3. To see information about unused and used memory and swap space on your custom VM, run the following command:
+	free
+4. To see details about the RAM installed on your VM, run the following command:
+	sudo dmidecode -t 17
+5. To verify the number of processors, run the following command:
+	nproc
+6. To see details about the CPUs installed on your VM, run the following command:
+	lscpu
+7. To exit the SSH terminal, run the following command:
+	exit
